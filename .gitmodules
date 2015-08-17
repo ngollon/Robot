@@ -1,3 +1,0 @@
-[submodule "External/PID"]
-	path = External/PID
-	url = https://github.com/br3ttb/Arduino-PID-Library.git
