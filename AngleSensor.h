@@ -5,15 +5,15 @@
 class AngleSensor
 {
 public:
-  AngleSensor();
+    AngleSensor();
 
-  void update();
-  float getAngle();
-  float getRate();
+    void update();
+    float getAngle();
+    float getRate();
 
 private:
-  MPU6050 _mpu;
-  unsigned long _lastUpdateTime;   // last time update was called, in microseconds
-  float _currentAngle;             // Current estimate for angle in degrees
-  float _currentRate;              // Current estimate for rate in degrees/s
+    MPU6050 _mpu;
+    unsigned long _lastUpdateTime;   // last time update was called, in microseconds
+    float _currentAngle;             // Current estimate for angle in degrees
+    float _currentRate;              // Current estimate for rate in degrees/s
 }
