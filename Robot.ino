@@ -2,13 +2,13 @@
 #include "AngleSensor.h"
 #include "PID.h"
 
-Stepper stepper1(1, 0, 2, 3, 4, false);
+Stepper stepper1(0, 1, 2, 3, 4, false);
 Stepper stepper2(6, 5, 7, 8, 9, true);
-AngleSensor angleSensor();
-PID pid(-10, 0, 0)
+//AngleSensor angleSensor();
+PID pid(-10, 0, 0);
 
 #define ANGLE_OFFSET 1.9
-
+#define MAX_SPEED 1600.0
 #define DEBUG
 
 void setup() {
@@ -16,9 +16,9 @@ void setup() {
     delay(5000);
 
     // Initialize steppers
-    stepper1.setMaxSpeed(400.0);
-    stepper1.setAcceleration(800.0);
-    stepper1.setSpeed(400);
+    stepper1.setMaxSpeed(MAX_SPEED);
+    stepper1.setAcceleration(600.0);
+    stepper1.setSpeed(MAX_SPEED);
 
     // Initialize timer
     // With 16Mhz Clock speed, prescaling 8 and OSC1A 1024
@@ -36,6 +36,7 @@ ISR(TIMER1_COMPA_vect)
     stepper1.run();
 }
 
+#if 0
 void update_speed()
 {
     angleSensor.update();
@@ -54,13 +55,14 @@ void update_speed()
     stepper1.setSpeed(speed);
     stepper2.setSpeed(speed);
 }
+#endif
 
 void loop() {
     // update_speed();
 
     stepper1.accelerate();
-    if(stepper1.getCurrentSpeed() > 380)
-        stepper1.setSpeed(-400);
-    if(stepper1.getCurrentSpeed() < -380)
-        stepper1.setSpeed(400);
+    if(stepper1.getCurrentSpeed() > MAX_SPEED - 20)
+        stepper1.setSpeed(-MAX_SPEED);
+    if(stepper1.getCurrentSpeed() < -MAX_SPEED + 20)
+        stepper1.setSpeed(MAX_SPEED);
 }

@@ -1,6 +1,7 @@
 #pragma once
-#include "I2Cdev.h"
-#include "MPU6050.h"
+#if 0
+#include <I2Cdev.h>
+#include <MPU6050.h>
 
 class AngleSensor
 {
@@ -16,4 +17,5 @@ private:
     unsigned long _lastUpdateTime;   // last time update was called, in microseconds
     float _currentAngle;             // Current estimate for angle in degrees
     float _currentRate;              // Current estimate for rate in degrees/s
-}
+};
+#endif

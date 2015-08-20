@@ -15,4 +15,4 @@ private:
     unsigned long _lastCalculateTime;    // last time calculate was called, in microseconds
     float _lastError;
     float _integratedError;
-}
+};

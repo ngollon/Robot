@@ -1,6 +1,8 @@
 #include "Arduino.h"
 #include "AngleSensor.h"
 
+#if 0
+
 #define GYRO_FACTOR 0.98
 #define ACCEL_FACTOR 0.02
 
@@ -8,6 +10,8 @@
 #define GYRO_X_OFFSET -327
 #define GYRO_Y_OFFSET = 160;
 #define GYRO_Z_OFFSET = 17;
+
+
 
 AngleSensor::AngleSensor()
 {
@@ -65,3 +69,4 @@ void AngleSensor::update()
     }
     _lastUpdateTime = currentTime;
 }
+#endif

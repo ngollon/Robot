@@ -132,6 +132,7 @@ void Stepper::updateMicrosteppingMode(){
         if (microsteppingMode > 16)
             microsteppingMode = 16;
 
+        //setMicrosteppingMode(1);
         setMicrosteppingMode(microsteppingMode);
     }
 }

@@ -12,7 +12,7 @@ PID::PID(float ki, float kp, float kd)
     _integratedError = 0;
 }
 
-PID::calculate(float setPoint, float currentValue)
+float PID::calculate(float setPoint, float currentValue)
 {
     unsigned long currentTime = micros();
     if(_lastCalculateTime == 0)
