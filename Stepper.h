@@ -1,5 +1,7 @@
 #pragma once
 
+#define MAX_MICROSTEPPING_MODE 4
+
 class Stepper
 {
 public:
@@ -25,11 +27,14 @@ private:
     float      _maxSpeed;        // The maximum permitted speed in steps per second. Must be > 0.
     float      _acceleration;    // Acceleration in steps per second squared
 
+	int _desiredMicrosteppingMode;	 // The microstepping mode the motor SHOULD run at.
+	int _currentMicrosteppingMode;	 // The microstepping mode the motor runs at. 
+	int _stepCounter;				 // Counts microsteps done. 
+
     unsigned long  _minUsPerStep;    // Given the current max speed, how fast can steps be done?
     unsigned long  _lastUpdateTime;  // The last time updateSpeed was called
     unsigned long  _lastStepTime;    // The last step time in microseconds
-    unsigned long  _usPerFullStep;   // The current interval between steps in microseconds. 0 means stopped.
-    unsigned long  _usPerMicroStep;
+    unsigned long  _usPerFullStep;   // The current interval between steps in microseconds. 0 means stopped.    
 
     void setDirection(bool forward);
     void updateMicrosteppingMode();
