@@ -1,3 +1,8 @@
+# PlatformIO
+.pioenvs
+.sconsign.dblite
+lib
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db

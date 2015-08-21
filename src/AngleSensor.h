@@ -1,5 +1,4 @@
 #pragma once
-#if 0
 #include <I2Cdev.h>
 #include <MPU6050.h>
 
@@ -18,4 +17,3 @@ private:
     float _currentAngle;             // Current estimate for angle in degrees
     float _currentRate;              // Current estimate for rate in degrees/s
 };
-#endif

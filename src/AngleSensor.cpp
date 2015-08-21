@@ -1,24 +1,21 @@
 #include "Arduino.h"
 #include "AngleSensor.h"
 
-#if 0
-
 #define GYRO_FACTOR 0.98
 #define ACCEL_FACTOR 0.02
 
 // Where do these come from?
 #define GYRO_X_OFFSET -327
-#define GYRO_Y_OFFSET = 160;
-#define GYRO_Z_OFFSET = 17;
-
+#define GYRO_Y_OFFSET  160
+#define GYRO_Z_OFFSET   17
 
 
 AngleSensor::AngleSensor()
-{
-    // Initialize variables
-    _lastUpdateTime = 0;
+{	
+	Wire.begin();
 
-    Fastwire::setup(800, true);
+    // Initialize variables
+    _lastUpdateTime = 0;    
     _mpu.initialize();
     _mpu.setXGyroOffset(0);
     _mpu.setYGyroOffset(0);
@@ -40,7 +37,7 @@ void AngleSensor::update()
     unsigned long currentTime = micros();
 
     // Read raw accel/gyro measurements from MPU6050
-    float ax, ay, az, gx, gy, gz;
+    int ax, ay, az, gx, gy, gz;
     _mpu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
 
     // Remove offsets
@@ -69,4 +66,3 @@ void AngleSensor::update()
     }
     _lastUpdateTime = currentTime;
 }
-#endif

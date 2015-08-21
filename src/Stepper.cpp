@@ -64,17 +64,29 @@ void Stepper::run()
 {
 	unsigned long currentTime = micros();
 
+	// If we run for the first time, or the motor is stopped, do nothing.
 	if (_lastStepTime == 0 || _desiredMicrosteppingMode == -1)
 	{
 		_lastStepTime = currentTime;
+		return;
 	}
-	else		
+
+	int nextStepSize;
+	int nextStepMode;
+
+	// If we have not changed the microstepping mode, we continue as usual
+	if(_currentMicrosteppingMode == _desiredMicrosteppingMode)
+	{
+		nextStepMode = _currentMicrosteppingMode;
+		nextStepSize = (1 << (MAX_MICROSTEPPING_MODE - _currentMicrosteppingMode));
+	}
+	else
 	{
 		// First, check what the fastest possible microstep is with the current state of stepCounter
 		// We need to be sure that e.g. a quarter step is only done, if the stepCounter is divisible by 4.
 
 		// We try to be fast here and avoid division since this is run in an ISR.
-		// See https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightParallel
+		// See https://graphics.stanford.edu/~seander/bithacks.html for all the nasty stuff in here
 		int nextStepSize = 1 << MAX_MICROSTEPPING_MODE;
 		if(_stepCounter > 0)
 			nextStepSize = _stepCounter & -_stepCounter;
@@ -84,27 +96,33 @@ void Stepper::run()
 		if(nextStepSize > desiredStepSize)
 			nextStepSize = desiredStepSize;
 
+		// Determine the microstepping mode from the chosen step size
 		int nextStepMode = MAX_MICROSTEPPING_MODE;
 		int tempStepSize = nextStepSize;
 		while(tempStepSize > 1)
 		{
-			tempStepSize >> 1;
+			tempStepSize >>= 1;
 			nextStepMode--;
-		}		
+		}	
+	}
 
-		// Check if a step needs to be done yet
-		if(_lastStepTime  + (_usPerFullStep >> nextStepMode < currentTime)
-		{
-			setMicrosteppingMode(nextStepMode);			
+	int nextStepTime = _lastStepTime  + (_usPerFullStep >> nextStepMode);
+	// Check if a step needs to be done yet
+	if(nextStepTime < currentTime)
+	{	
+		if(_currentMicrosteppingMode != nextStepMode)
+			setMicrosteppingMode(nextStepMode);
 
-			// Do a step
-			digitalWrite(_stepPin, 1);
-			delayMicroseconds(5);
-			digitalWrite(_stepPin, 0);
+		// Do a step
+		digitalWrite(_stepPin, 1);
+		delayMicroseconds(5);
+		digitalWrite(_stepPin, 0);
 
-			_lastStepTime += _usPerMicroStep;
-			_stepCounter += nextStepSize;
-		}
+		_lastStepTime = nextStepTime;
+		_stepCounter += nextStepSize;
+
+		// stepCounter is only needed modulo the largest step size
+		_stepCounter &= (1 << MAX_MICROSTEPPING_MODE) - 1;
 	}
 }
 
