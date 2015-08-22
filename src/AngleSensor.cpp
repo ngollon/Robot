@@ -11,11 +11,11 @@
 
 
 AngleSensor::AngleSensor()
-{	
-	Wire.begin();
+{
+		Wire.begin();
 
     // Initialize variables
-    _lastUpdateTime = 0;    
+    _lastUpdateTime = 0;
     _mpu.initialize();
     _mpu.setXGyroOffset(0);
     _mpu.setYGyroOffset(0);

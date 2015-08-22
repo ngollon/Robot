@@ -2,13 +2,13 @@
 #include "AngleSensor.h"
 #include "PID.h"
 
-Stepper stepper1(0, 1, 2, 3, 4, false);
+Stepper stepper1(0, 1, 4, 3, 2, false);
 Stepper stepper2(6, 5, 7, 8, 9, true);
 //AngleSensor angleSensor();
 PID pid(-10, 0, 0);
 
 #define ANGLE_OFFSET 1.9
-#define MAX_SPEED 1600.0
+#define MAX_SPEED 1200.0
 #define DEBUG
 
 void setup() {
@@ -17,7 +17,7 @@ void setup() {
 
     // Initialize steppers
     stepper1.setMaxSpeed(MAX_SPEED);
-    stepper1.setAcceleration(600.0);
+    stepper1.setAcceleration(3200.0);
     stepper1.setSpeed(MAX_SPEED);
 
     // Initialize timer

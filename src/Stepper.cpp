@@ -12,7 +12,7 @@ Stepper::Stepper(int dirPin, int stepPin, int ms1Pin, int ms2Pin, int ms3Pin, bo
 	_lastStepTime = 0;
 	_usPerFullStep = 0;
 	_stepCounter = 0;
-	_currentMicrosteppingMode = 1;
+	_currentMicrosteppingMode = -1;
 
 	// Store pin layout
 	_reverse = reverse;
@@ -87,7 +87,7 @@ void Stepper::run()
 
 		// We try to be fast here and avoid division since this is run in an ISR.
 		// See https://graphics.stanford.edu/~seander/bithacks.html for all the nasty stuff in here
-		int nextStepSize = 1 << MAX_MICROSTEPPING_MODE;
+		nextStepSize = 1 << MAX_MICROSTEPPING_MODE;
 		if(_stepCounter > 0)
 			nextStepSize = _stepCounter & -_stepCounter;
 
@@ -97,20 +97,21 @@ void Stepper::run()
 			nextStepSize = desiredStepSize;
 
 		// Determine the microstepping mode from the chosen step size
-		int nextStepMode = MAX_MICROSTEPPING_MODE;
+		nextStepMode = MAX_MICROSTEPPING_MODE;
 		int tempStepSize = nextStepSize;
 		while(tempStepSize > 1)
 		{
 			tempStepSize >>= 1;
 			nextStepMode--;
-		}	
+		}
 	}
 
-	int nextStepTime = _lastStepTime  + (_usPerFullStep >> nextStepMode);
+	unsigned long nextStepTime = _lastStepTime  + (_usPerFullStep >> nextStepMode);
+
 	// Check if a step needs to be done yet
 	if(nextStepTime < currentTime)
-	{	
-		if(_currentMicrosteppingMode != nextStepMode)
+	{
+		//if(_currentMicrosteppingMode != nextStepMode)
 			setMicrosteppingMode(nextStepMode);
 
 		// Do a step
@@ -128,8 +129,20 @@ void Stepper::run()
 
 void Stepper::accelerate()
 {
-	long currentTime = micros();
+	unsigned long currentTime = micros();
+
+	Serial.print(_currentMicrosteppingMode, DEC);Serial.print("\t");
+	Serial.println();
+
+
+	if(_lastUpdateTime == 0)
+	{
+			_lastUpdateTime = currentTime;
+			return;
+	}
+
 	float timeSinceLastUpdate = (currentTime - _lastUpdateTime) * 1e-6;
+
 	_lastUpdateTime = currentTime;
 
 	if (_currentSpeed == _desiredSpeed)
@@ -181,18 +194,15 @@ void Stepper::updateMicrosteppingMode()
 		}
 
 		if (microsteppingMode > MAX_MICROSTEPPING_MODE)
-			microsteppingMode = MAX_MICROSTEPPING_MODE;		
+			microsteppingMode = MAX_MICROSTEPPING_MODE;
 
-		_desiredMicrosteppingMode = microsteppingMode;		
+		_desiredMicrosteppingMode = microsteppingMode;
 	}
 }
 
 void Stepper::setMicrosteppingMode(int microsteppingMode)
 {
-	if(microsteppingMode == _currentMicrosteppingMode)
-		return;
-
-	_currentMicrosteppingMode = microsteppingMode;	
+	_currentMicrosteppingMode = microsteppingMode;
 	switch (microsteppingMode)
 	{
 	case 0:
@@ -214,9 +224,9 @@ void Stepper::setMicrosteppingMode(int microsteppingMode)
 		break;
 
 	case 3:
-		digitalWrite(_ms1Pin, 0);
-		digitalWrite(_ms2Pin, 0);
-		digitalWrite(_ms3Pin, 1);
+		digitalWrite(_ms1Pin, 1);
+		digitalWrite(_ms2Pin, 1);
+		digitalWrite(_ms3Pin, 0);
 		break;
 
 	case 4:
