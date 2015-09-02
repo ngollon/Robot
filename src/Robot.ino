@@ -2,8 +2,21 @@
 #include "AngleSensor.h"
 #include "PID.h"
 
-Stepper stepper1(600, 0, 1, 4, 3, 2, false);
-Stepper stepper2(600, 6, 5, 7, 8, 9, true);
+// This is for Leonardo
+Pin pin0 = { &DDRD, &PORTD, 2 };
+Pin pin1 = { &DDRD, &PORTD, 3 };
+Pin pin2 = { &DDRD, &PORTD, 1 };
+Pin pin3 = { &DDRD, &PORTD, 0 };
+Pin pin4 = { &DDRD, &PORTD, 4 };
+Pin pin5 = { &DDRC, &PORTC, 6 };
+Pin pin6 = { &DDRD, &PORTD, 7 };
+Pin pin7 = { &DDRE, &PORTE, 6 };
+Pin pin8 = { &DDRB, &PORTB, 4 };
+Pin pin9 = { &DDRB, &PORTB, 5 };
+
+Stepper stepper1(600, pin1, pin0, pin4, pin3, pin2, false);
+Stepper stepper2(600, pin6, pin5, pin9, pin8, pin7, true);
+
 //AngleSensor angleSensor();
 PID pid(-10, 0, 0);
 
@@ -16,6 +29,9 @@ void setup() {
     delay(5000);
 
     // Initialize steppers
+    pinMode(0, OUTPUT);
+    pinMode(5, OUTPUT);
+
     stepper1.setMaxSpeed(MAX_SPEED);
     stepper1.setAcceleration(3200.0);
     stepper1.setSpeed(MAX_SPEED);

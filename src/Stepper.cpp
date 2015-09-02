@@ -1,7 +1,17 @@
 #include "Stepper.h"
 #include "Arduino.h"
 
-Stepper::Stepper(unsigned long minUsPerStep, int dirPin, int stepPin, int ms1Pin, int ms2Pin, int ms3Pin, bool reverse)
+#define SET(p) *p.port |= (1 << p.index)
+#define CLR(p) *p.port &= ~(1 << p.index)
+#define CFG_OUT(p) *p.ddr |= (1 << p.index)
+
+Stepper::Stepper(	unsigned long minUsPerStep,
+					Pin dirPin,
+					Pin stepPin,
+					Pin ms1Pin,
+					Pin ms2Pin,
+					Pin ms3Pin,
+					bool reverse)
 {
 	// Set some consistent default values
 	_maxSpeed = 1.0;
@@ -23,16 +33,16 @@ Stepper::Stepper(unsigned long minUsPerStep, int dirPin, int stepPin, int ms1Pin
 	_ms3Pin = ms3Pin;
 
 	// Configure pins
-	pinMode(_dirPin, OUTPUT);
-	pinMode(_stepPin, OUTPUT);
-	pinMode(_ms1Pin, OUTPUT);
-	pinMode(_ms2Pin, OUTPUT);
-	pinMode(_ms3Pin, OUTPUT);
+	CFG_OUT(_dirPin);
+	CFG_OUT(_stepPin);
+	CFG_OUT(_ms1Pin);
+	CFG_OUT(_ms2Pin);
+	CFG_OUT(_ms3Pin);
 }
 
 void Stepper::setMaxSpeed(float speed)
 {
-	_maxSpeed = speed;	
+	_maxSpeed = speed;
 	if (_desiredSpeed > _maxSpeed)
 		_desiredSpeed = _maxSpeed;
 	if (_desiredSpeed < -_maxSpeed)
@@ -114,8 +124,9 @@ void Stepper::run()
 			setMicrosteppingMode(nextStepMode);
 
 		// Do a step
-		digitalWrite(_stepPin, 1);
-		digitalWrite(_stepPin, 0);
+		SET(_stepPin);
+		delayMicroseconds(2);
+		CLR(_stepPin);
 
 		_lastStepTime = nextStepTime;
 		_stepCounter += nextStepSize;
@@ -169,9 +180,9 @@ void Stepper::accelerate()
 void Stepper::setDirection(bool direction)
 {
 	if (direction ^ _reverse)
-		digitalWrite(_dirPin, 1);
+		SET(_dirPin);
 	else
-		digitalWrite(_dirPin, 0);
+		CLR(_dirPin);
 }
 
 void Stepper::updateMicrosteppingMode()
@@ -204,33 +215,33 @@ void Stepper::setMicrosteppingMode(int microsteppingMode)
 	switch (microsteppingMode)
 	{
 	case 0:
-		digitalWrite(_ms1Pin, 0);
-		digitalWrite(_ms2Pin, 0);
-		digitalWrite(_ms3Pin, 0);
+		CLR(_ms1Pin);
+		CLR(_ms2Pin);
+		CLR(_ms3Pin);
 		break;
 
 	case 1:
-		digitalWrite(_ms1Pin, 1);
-		digitalWrite(_ms2Pin, 0);
-		digitalWrite(_ms3Pin, 0);
+		SET(_ms1Pin);
+		CLR(_ms2Pin);
+		CLR(_ms3Pin);
 		break;
 
 	case 2:
-		digitalWrite(_ms1Pin, 0);
-		digitalWrite(_ms2Pin, 1);
-		digitalWrite(_ms3Pin, 0);
+		CLR(_ms1Pin);
+		SET(_ms2Pin);
+		CLR(_ms3Pin);
 		break;
 
 	case 3:
-		digitalWrite(_ms1Pin, 1);
-		digitalWrite(_ms2Pin, 1);
-		digitalWrite(_ms3Pin, 0);
+		SET(_ms1Pin);
+		SET(_ms2Pin);
+		CLR(_ms3Pin);
 		break;
 
 	case 4:
-		digitalWrite(_ms1Pin, 1);
-		digitalWrite(_ms2Pin, 1);
-		digitalWrite(_ms3Pin, 1);
+		SET(_ms1Pin);
+		SET(_ms2Pin);
+		SET(_ms3Pin);
 		break;
 	}
 }

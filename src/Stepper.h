@@ -2,10 +2,23 @@
 
 #define MAX_MICROSTEPPING_MODE 4
 
+struct Pin
+{
+    volatile unsigned char* ddr;
+    volatile unsigned char* port;
+    unsigned char index;
+};
+
 class Stepper
 {
 public:
-    Stepper(unsigned long minUsPerStep, int dirPin, int stepPin, int ms1Pin, int ms2Pin, int ms3Pin, bool reverse);
+    Stepper(unsigned long minUsPerStep,
+            Pin dirPin,
+            Pin stepPin,
+            Pin ms1Pin,
+            Pin ms2Pin,
+            Pin ms3Pin,
+            bool reverse);
 
     void    setMaxSpeed(float speed);
     void    setAcceleration(float acceleration);
@@ -16,11 +29,11 @@ public:
     void    accelerate();
 
 private:
-    int        _dirPin;
-    int        _stepPin;
-    int        _ms1Pin;
-    int        _ms2Pin;
-    int        _ms3Pin;
+    Pin        _dirPin;
+    Pin        _stepPin;
+    Pin        _ms1Pin;
+    Pin        _ms2Pin;
+    Pin        _ms3Pin;
     bool       _reverse;         // Changes wich direction is considered forward
     float      _desiredSpeed;    // The desired speed in steps per second
     float      _currentSpeed;    // The current motos speed in steps per second
