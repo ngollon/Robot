@@ -19,6 +19,7 @@ float PID::calculate(float setPoint, float currentValue)
     {
         _lastCalculateTime = currentTime;
         _lastError = setPoint - currentValue;
+        return setPoint;
     }
     else
     {

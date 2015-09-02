@@ -2,8 +2,8 @@
 #include "AngleSensor.h"
 #include "PID.h"
 
-Stepper stepper1(0, 1, 4, 3, 2, false);
-Stepper stepper2(6, 5, 7, 8, 9, true);
+Stepper stepper1(600, 0, 1, 4, 3, 2, false);
+Stepper stepper2(600, 6, 5, 7, 8, 9, true);
 //AngleSensor angleSensor();
 PID pid(-10, 0, 0);
 
@@ -21,12 +21,12 @@ void setup() {
     stepper1.setSpeed(MAX_SPEED);
 
     // Initialize timer
-    // With 16Mhz Clock speed, prescaling 8 and OSC1A 1024
-    // the ISR will be called 2048 times a second. More than enough for the 400 max speed.
+    // With 16Mhz Clock speed, prescaling 8 and OSC1A 300
+    // the ISR will be called every 150 µs
     cli();
     TCCR1A = 0;
     TCCR1B = (1 << WGM12) | (1 << CS11);
-    OCR1A = 1024;
+    OCR1A = 300;
     TIMSK1 = (1 << OCIE1A);
     sei();
 }

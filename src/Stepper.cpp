@@ -1,11 +1,11 @@
 #include "Stepper.h"
 #include "Arduino.h"
 
-Stepper::Stepper(int dirPin, int stepPin, int ms1Pin, int ms2Pin, int ms3Pin, bool reverse)
+Stepper::Stepper(unsigned long minUsPerStep, int dirPin, int stepPin, int ms1Pin, int ms2Pin, int ms3Pin, bool reverse)
 {
 	// Set some consistent default values
 	_maxSpeed = 1.0;
-	_minUsPerStep = 1e6;
+	_minUsPerStep = minUsPerStep;
 	_acceleration = 1.0;
 	_desiredSpeed = 0.0;
 	_currentSpeed = 0.0;
@@ -32,8 +32,7 @@ Stepper::Stepper(int dirPin, int stepPin, int ms1Pin, int ms2Pin, int ms3Pin, bo
 
 void Stepper::setMaxSpeed(float speed)
 {
-	_maxSpeed = speed;
-	_minUsPerStep = (unsigned long)(1e6 / _maxSpeed);
+	_maxSpeed = speed;	
 	if (_desiredSpeed > _maxSpeed)
 		_desiredSpeed = _maxSpeed;
 	if (_desiredSpeed < -_maxSpeed)
@@ -111,12 +110,11 @@ void Stepper::run()
 	// Check if a step needs to be done yet
 	if(nextStepTime < currentTime)
 	{
-		//if(_currentMicrosteppingMode != nextStepMode)
+		if(_currentMicrosteppingMode != nextStepMode)
 			setMicrosteppingMode(nextStepMode);
 
 		// Do a step
 		digitalWrite(_stepPin, 1);
-		delayMicroseconds(5);
 		digitalWrite(_stepPin, 0);
 
 		_lastStepTime = nextStepTime;
