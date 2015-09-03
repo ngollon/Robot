@@ -40,9 +40,9 @@ private:
     float      _maxSpeed;        // The maximum permitted speed in steps per second. Must be > 0.
     float      _acceleration;    // Acceleration in steps per second squared
 
-	int _desiredMicrosteppingMode;	 // The microstepping mode the motor SHOULD run at.
-	int _currentMicrosteppingMode;	 // The microstepping mode the motor runs at.
-	int _stepCounter;				 // Counts microsteps done.
+	unsigned char  _desiredMicrosteppingMode;	 // The microstepping mode the motor SHOULD run at.
+	unsigned char  _currentMicrosteppingMode;	 // The microstepping mode the motor runs at.
+	unsigned char  _stepCounter;				 // Counts microsteps done.
 
     unsigned long  _minUsPerStep;    // Given the current max speed, how fast can steps be done?
     unsigned long  _lastUpdateTime;  // The last time updateSpeed was called

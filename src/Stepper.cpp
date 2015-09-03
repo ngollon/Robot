@@ -23,6 +23,7 @@ Stepper::Stepper(	unsigned long minUsPerStep,
 	_usPerFullStep = 0;
 	_stepCounter = 0;
 	_currentMicrosteppingMode = -1;
+	_desiredMicrosteppingMode = -1;
 
 	// Store pin layout
 	_reverse = reverse;
@@ -80,14 +81,14 @@ void Stepper::run()
 		return;
 	}
 
-	int nextStepSize;
-	int nextStepMode;
+	unsigned char nextStepSize;
+	unsigned char nextStepMode;
 
 	// If we have not changed the microstepping mode, we continue as usual
 	if(_currentMicrosteppingMode == _desiredMicrosteppingMode)
 	{
 		nextStepMode = _currentMicrosteppingMode;
-		nextStepSize = (1 << (MAX_MICROSTEPPING_MODE - _currentMicrosteppingMode));
+		nextStepSize = (1 << (MAX_MICROSTEPPING_MODE - nextStepMode));
 	}
 	else
 	{
@@ -100,14 +101,14 @@ void Stepper::run()
 		if(_stepCounter > 0)
 			nextStepSize = _stepCounter & -_stepCounter;
 
-		int desiredStepSize = 1 << (MAX_MICROSTEPPING_MODE - _desiredMicrosteppingMode);
+		unsigned char desiredStepSize = 1 << (MAX_MICROSTEPPING_MODE - _desiredMicrosteppingMode);
 
 		if(nextStepSize > desiredStepSize)
 			nextStepSize = desiredStepSize;
 
 		// Determine the microstepping mode from the chosen step size
 		nextStepMode = MAX_MICROSTEPPING_MODE;
-		int tempStepSize = nextStepSize;
+		unsigned char tempStepSize = nextStepSize;
 		while(tempStepSize > 1)
 		{
 			tempStepSize >>= 1;
