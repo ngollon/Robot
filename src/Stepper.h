@@ -37,6 +37,7 @@ private:
     bool       _reverse;         // Changes wich direction is considered forward
     float      _desiredSpeed;    // The desired speed in steps per second
     float      _currentSpeed;    // The current motos speed in steps per second
+    bool       _directionChanged; 
     float      _maxSpeed;        // The maximum permitted speed in steps per second. Must be > 0.
     float      _acceleration;    // Acceleration in steps per second squared
 

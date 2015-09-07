@@ -18,6 +18,7 @@ Stepper::Stepper(	unsigned long minUsPerStep,
 	_minUsPerStep = minUsPerStep;
 	_acceleration = 1.0;
 	_desiredSpeed = 0.0;
+	_directionChanged = false;
 	_currentSpeed = 0.0;
 	_lastStepTime = 0;
 	_usPerFullStep = 0;
@@ -130,7 +131,11 @@ void Stepper::run()
 		CLR(_stepPin);
 
 		_lastStepTime = nextStepTime;
-		_stepCounter += nextStepSize;
+
+		if(_directionChanged)
+			_stepCounter -= nextStepSize;
+		else
+			_stepCounter += nextStepSize;
 
 		// stepCounter is only needed modulo the largest step size
 		_stepCounter &= (1 << MAX_MICROSTEPPING_MODE) - 1;
@@ -181,9 +186,15 @@ void Stepper::accelerate()
 void Stepper::setDirection(bool direction)
 {
 	if (direction ^ _reverse)
+	{
+		_directionChanged = true;
 		SET(_dirPin);
+	}
 	else
+	{
+		_directionChanged = false;
 		CLR(_dirPin);
+	}
 }
 
 void Stepper::updateMicrosteppingMode()
